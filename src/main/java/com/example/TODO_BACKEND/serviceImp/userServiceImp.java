@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import  com.example.TODO_BACKEND.exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class userServiceImp implements userService {
     private userRepo userRepo;
     @Autowired
     private ModelMapper modelMapper;
+
     @Override
     public UserDto createUser(UserDto user){
         User user1 = this.dtoToEntity(user);
@@ -32,6 +34,7 @@ public class userServiceImp implements userService {
     }
 
     @Override
+    @CachePut(value = "User", key = "#userId")
     public UserDto updateUser(UserDto userDto, Long userId) {
 
         User user = this.userRepo.findById(userId).orElseThrow( ()-> new ResourceNotFoundException("User","User Id",userId));
@@ -46,7 +49,6 @@ public class userServiceImp implements userService {
     }
 
     @Override
-
     public UserDto getUserById(Long userId){
 
         User user = this.userRepo.findById(userId).orElseThrow( ()-> new ResourceNotFoundException("User","User Id",userId));
@@ -55,7 +57,6 @@ public class userServiceImp implements userService {
     }
 
     @Override
-
     public List<UserDto> getAllUsers(){
        List <User> users=this.userRepo.findAll();
       List<UserDto> userDtos= users.stream().map(user->this.userToDto(user)).collect(Collectors.toList());
@@ -64,6 +65,7 @@ public class userServiceImp implements userService {
         return userDtos;
     }
 
+    @Override
     public void deleteUser(Long userId){
      User user=   this.userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user","userId",userId));
         this.userRepo.delete(user);
@@ -72,20 +74,16 @@ public class userServiceImp implements userService {
     private User dtoToEntity(UserDto userDto){
 
         User user = this.modelMapper.map(userDto,User.class);
-
 //        user.setId(userDto.getId());
 //        user.setName(userDto.getName());
 //        user.setEmail(userDto.getEmail());
 //        user.setPassword(userDto.getPassword());
 //        user.setAbout(userDto.getAbout());
-
-
         return user;
     }
 
     public UserDto userToDto(User user){
         UserDto u= this.modelMapper.map(user , UserDto.class);
-
 //        u.setId(user.getId());
 //        u.setName(user.getName());
 //        u.setEmail(user.getEmail());

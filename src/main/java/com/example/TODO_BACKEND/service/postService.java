@@ -2,6 +2,7 @@ package com.example.TODO_BACKEND.service;
 
 import com.example.TODO_BACKEND.Dto.PostDto;
 import com.example.TODO_BACKEND.entity.Post;
+import com.example.TODO_BACKEND.payloads.PostResponse;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface postService {
     PostDto getPostById(Long id);
 
     //getAll
-    List<PostDto> getAll();
+    PostResponse getAll(Integer pageNumber, Integer pageSize);
 
     //get all post by category
     List<PostDto> getPostsByCategory(Long categoryId);

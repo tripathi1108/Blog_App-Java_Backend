@@ -3,6 +3,7 @@ package com.example.TODO_BACKEND.controller;
 import com.example.TODO_BACKEND.Dto.PostDto;
 
 import com.example.TODO_BACKEND.payloads.ApiResponse;
+import com.example.TODO_BACKEND.payloads.PostResponse;
 import com.example.TODO_BACKEND.service.postService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/post")
 
@@ -45,11 +46,14 @@ public class postController {
     }
 
     //getall
-    @GetMapping("/")
-    public ResponseEntity<List<PostDto>> getAllPosts()
+    @GetMapping("/all")
+    public ResponseEntity<PostResponse> getAllPosts(
+            @RequestParam(value = "pageNumber",defaultValue = "1",required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "1",required = false) Integer pageSize
+    )
     {
-        List<PostDto> postDto = this.postService.getAll();
-        return new ResponseEntity<>(postDto,HttpStatus.OK);
+        PostResponse postDto = this.postService.getAll(pageNumber,pageSize);
+        return new ResponseEntity<PostResponse>(postDto,HttpStatus.OK);
     }
     //getById
     @GetMapping("/{postId}")

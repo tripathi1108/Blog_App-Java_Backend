@@ -5,14 +5,19 @@ import com.example.TODO_BACKEND.entity.Category;
 import com.example.TODO_BACKEND.entity.Post;
 import com.example.TODO_BACKEND.entity.User;
 import com.example.TODO_BACKEND.exceptions.ResourceNotFoundException;
+import com.example.TODO_BACKEND.payloads.PostResponse;
 import com.example.TODO_BACKEND.repository.CategoryRpo;
 import com.example.TODO_BACKEND.repository.PostRepo;
 import com.example.TODO_BACKEND.repository.userRepo;
 import com.example.TODO_BACKEND.service.postService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org .springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.Date;
 import java.util.List;
@@ -89,13 +94,23 @@ public  class postServiceImp implements postService {
 
     //getAll
     @Override
-   public List<PostDto> getAll(
-
-    )
+   public PostResponse getAll(Integer pageNumber, Integer pageSize)
     {
-        List<Post>posts= this.postRepo.findAll();
-        List<PostDto>postDtos = posts.stream().map((post) -> this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
-        return postDtos;
+        Integer page=pageNumber;
+        Integer pageNumberr=pageSize;
+        Pageable pageable = PageRequest.of(page,pageNumberr);
+        Page<Post> pagee = this.postRepo.findAll(pageable);
+        List<Post> pp=pagee.getContent();
+        List<PostDto>postDtos = pp.stream().map((post) -> this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
+       PostResponse postResponse = new PostResponse();
+       postResponse.setContent(postDtos);
+       postResponse.setPageNumber(pagee.getNumber());
+       postResponse.setPageSize(pagee.getSize());
+       postResponse.setTotalElement(pagee.getTotalElements());
+       postResponse.setTotalPages(pagee.getTotalPages());
+       postResponse.setLastPage(pagee.isLast());
+
+        return postResponse;
     }
 
 
